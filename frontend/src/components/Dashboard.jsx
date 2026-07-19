@@ -3,7 +3,7 @@ import SummaryCards from './SummaryCards.jsx'
 import ExpenseForm from './ExpenseForm.jsx'
 import ExpenseTable from './ExpenseTable.jsx'
 
-const API = 'http://localhost:8080/expenses'
+const API = '/expenses'
 
 export default function Dashboard() {
   const [expenses, setExpenses] = useState([])
