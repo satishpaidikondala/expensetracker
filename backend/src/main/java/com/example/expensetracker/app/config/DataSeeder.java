@@ -51,5 +51,26 @@ public class DataSeeder implements CommandLineRunner {
         );
 
         repository.saveAll(seed);
+
+        int y = LocalDate.now().getYear();
+        if (y != 2025) {
+            List<Expense> current = List.of(
+                new Expense(null, new BigDecimal("85.00"), "Food", "Groceries", LocalDate.of(y, 1, 12)),
+                new Expense(null, new BigDecimal("1100.00"), "Bills", "Rent", LocalDate.of(y, 1, 1)),
+                new Expense(null, new BigDecimal("45.00"), "Transport", "Bus Pass", LocalDate.of(y, 2, 1)),
+                new Expense(null, new BigDecimal("200.00"), "Shopping", "New Jacket", LocalDate.of(y, 2, 15)),
+                new Expense(null, new BigDecimal("60.00"), "Food", "Lunch Out", LocalDate.of(y, 3, 8)),
+                new Expense(null, new BigDecimal("500.00"), "Bills", "Insurance", LocalDate.of(y, 3, 20)),
+                new Expense(null, new BigDecimal("35.00"), "Entertainment", "Streaming", LocalDate.of(y, 4, 5)),
+                new Expense(null, new BigDecimal("150.00"), "Food", "Dinner", LocalDate.of(y, 4, 18)),
+                new Expense(null, new BigDecimal("320.00"), "Bills", "Electricity", LocalDate.of(y, 5, 10)),
+                new Expense(null, new BigDecimal("75.00"), "Transport", "Gas", LocalDate.of(y, 5, 22)),
+                new Expense(null, new BigDecimal("99.00"), "Other", "Gift", LocalDate.of(y, 6, 14)),
+                new Expense(null, new BigDecimal("180.00"), "Food", "BBQ Supplies", LocalDate.of(y, 6, 28)),
+                new Expense(null, new BigDecimal("40.00"), "Entertainment", "Movie", LocalDate.of(y, 7, 3)),
+                new Expense(null, new BigDecimal("850.00"), "Travel", "Weekend Trip", LocalDate.of(y, 7, 19))
+            );
+            repository.saveAll(current);
+        }
     }
 }
