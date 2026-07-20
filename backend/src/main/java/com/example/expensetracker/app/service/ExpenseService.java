@@ -67,9 +67,9 @@ public class ExpenseService {
         return summary;
     }
 
-    public Map<String, BigDecimal> getMonthlySummary() {
-        int currentYear = LocalDate.now().getYear();
-        List<Object[]> results = repository.sumAmountByMonth(currentYear);
+    public Map<String, BigDecimal> getMonthlySummary(Integer year) {
+        int y = year != null ? year : LocalDate.now().getYear();
+        List<Object[]> results = repository.sumAmountByMonth(y);
         
         Map<String, BigDecimal> summary = new LinkedHashMap<>();
         
