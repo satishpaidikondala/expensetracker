@@ -63,6 +63,27 @@ body {
   color: #1a1a2e;
 }
 
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.chart-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.chart-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 12px;
+}
+
 .expense-form {
   background: #fff;
   border-radius: 12px;
@@ -83,6 +104,23 @@ body {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.field-wrap {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+}
+
+.field-error {
+  font-size: 11px;
+  color: #ef4444;
+  margin-top: 2px;
+}
+
+.input-error {
+  border-color: #ef4444 !important;
 }
 
 .form-row input,
@@ -138,6 +176,29 @@ body {
 .table-toolbar h2 {
   margin-bottom: 0;
   white-space: nowrap;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.csv-btn {
+  padding: 8px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #1a1a2e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.csv-btn:hover {
+  border-color: #6366f1;
+  color: #6366f1;
 }
 
 .search-input {
