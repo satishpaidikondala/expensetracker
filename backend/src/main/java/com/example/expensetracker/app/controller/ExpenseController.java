@@ -68,7 +68,8 @@ public class ExpenseController {
     }
 
     @GetMapping("/summary/monthly")
-    public ResponseEntity<Map<String, BigDecimal>> getMonthlySummary() {
-        return ResponseEntity.ok(service.getMonthlySummary());
+    public ResponseEntity<Map<String, BigDecimal>> getMonthlySummary(
+            @RequestParam(required = false) Integer year) {
+        return ResponseEntity.ok(service.getMonthlySummary(year));
     }
 }
