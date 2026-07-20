@@ -1,0 +1,12 @@
+{
+  "name": "expensetracker",
+  "private": true,
+  "scripts": {
+    "backend": "cd backend && set JAVA_HOME=C:\\Program Files\\Java\\jdk-21 && .\\mvnw spring-boot:run",
+    "frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
