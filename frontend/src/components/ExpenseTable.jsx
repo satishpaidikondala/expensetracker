@@ -49,6 +49,20 @@ export default function ExpenseTable({ expenses, onDelete }) {
     return result
   }, [expenses, search, sortBy, sortOrder])
 
+  const exportCsv = () => {
+    const header = 'Date,Category,Description,Amount\n'
+    const rows = filtered.map(
+      (e) => `${e.date},${e.category},"${e.description || ''}",${e.amount}`
+    ).join('\n')
+    const blob = new Blob([header + rows], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'expenses.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const safePage = Math.min(page, totalPages)
   const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
@@ -66,13 +80,16 @@ export default function ExpenseTable({ expenses, onDelete }) {
     <div className="expense-table">
       <div className="table-toolbar">
         <h2>Expenses</h2>
-        <input
-          className="search-input"
-          type="text"
-          placeholder="Search by description or category..."
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-        />
+        <div className="toolbar-actions">
+          <input
+            className="search-input"
+            type="text"
+            placeholder="Search by description or category..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+          />
+          <button className="csv-btn" onClick={exportCsv} title="Export CSV">CSV</button>
+        </div>
       </div>
 
       <table>
