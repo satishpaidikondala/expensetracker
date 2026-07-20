@@ -2,12 +2,14 @@ import { useState, useEffect, useCallback } from 'react'
 import SummaryCards from './SummaryCards.jsx'
 import ExpenseForm from './ExpenseForm.jsx'
 import ExpenseTable from './ExpenseTable.jsx'
+import { MonthlyBarChart, CategoryPieChart } from './ChartsPanel.jsx'
 
 const API = '/expenses'
 
 export default function Dashboard() {
   const [expenses, setExpenses] = useState([])
   const [categorySummary, setCategorySummary] = useState({})
+  const [monthlySummary, setMonthlySummary] = useState({})
   const [error, setError] = useState(null)
 
   const fetchExpenses = useCallback(async () => {
@@ -33,10 +35,22 @@ export default function Dashboard() {
     }
   }, [])
 
+  const fetchMonthlySummary = useCallback(async () => {
+    try {
+      const res = await fetch(`${API}/summary/monthly`)
+      if (!res.ok) throw new Error(`Failed to fetch monthly summary`)
+      const data = await res.json()
+      setMonthlySummary(data)
+    } catch {
+      // non-critical
+    }
+  }, [])
+
   useEffect(() => {
     fetchExpenses()
     fetchCategorySummary()
-  }, [fetchExpenses, fetchCategorySummary])
+    fetchMonthlySummary()
+  }, [fetchExpenses, fetchCategorySummary, fetchMonthlySummary])
 
   const handleAdd = async (expense) => {
     try {
@@ -49,6 +63,7 @@ export default function Dashboard() {
       const created = await res.json()
       setExpenses((prev) => [...prev, created])
       fetchCategorySummary()
+      fetchMonthlySummary()
     } catch (err) {
       setError(err.message)
     }
@@ -60,6 +75,7 @@ export default function Dashboard() {
       if (!res.ok) throw new Error('Failed to delete expense')
       setExpenses((prev) => prev.filter((e) => e.id !== id))
       fetchCategorySummary()
+      fetchMonthlySummary()
     } catch (err) {
       setError(err.message)
     }
@@ -82,6 +98,10 @@ export default function Dashboard() {
         mostExpensiveCategory={mostExpensiveCategory}
         categorySummary={categorySummary}
       />
+      <div className="charts-row">
+        <MonthlyBarChart data={monthlySummary} />
+        <CategoryPieChart data={categorySummary} />
+      </div>
       <ExpenseForm onAdd={handleAdd} />
       <ExpenseTable expenses={expenses} onDelete={handleDelete} />
     </div>
