@@ -10,10 +10,17 @@ export default function ExpenseForm({ onAdd }) {
   const [category, setCategory] = useState('Food')
   const [description, setDescription] = useState('')
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
+  const [touched, setTouched] = useState({})
+
+  const errors = {}
+  if (touched.amount && !amount) errors.amount = 'Required'
+  if (touched.amount && amount && parseFloat(amount) <= 0) errors.amount = 'Must be positive'
+  if (touched.date && !date) errors.date = 'Required'
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!amount || !category || !date) return
+    setTouched({ amount: true, date: true })
+    if (!amount || !date || parseFloat(amount) <= 0) return
     onAdd({
       amount: parseFloat(amount),
       category,
@@ -24,21 +31,26 @@ export default function ExpenseForm({ onAdd }) {
     setCategory('Food')
     setDescription('')
     setDate(new Date().toISOString().slice(0, 10))
+    setTouched({})
   }
 
   return (
     <form className="expense-form" onSubmit={handleSubmit}>
       <h2>Add Expense</h2>
       <div className="form-row">
-        <input
-          type="number"
-          step="0.01"
-          min="0"
-          placeholder="Amount"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          required
-        />
+        <div className="field-wrap">
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            onBlur={() => setTouched((p) => ({ ...p, amount: true }))}
+            className={errors.amount ? 'input-error' : ''}
+          />
+          {errors.amount && <span className="field-error">{errors.amount}</span>}
+        </div>
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           {categories.map((c) => (
             <option key={c} value={c}>{c}</option>
@@ -50,12 +62,16 @@ export default function ExpenseForm({ onAdd }) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          required
-        />
+        <div className="field-wrap">
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            onBlur={() => setTouched((p) => ({ ...p, date: true }))}
+            className={errors.date ? 'input-error' : ''}
+          />
+          {errors.date && <span className="field-error">{errors.date}</span>}
+        </div>
         <button type="submit">Add</button>
       </div>
     </form>
