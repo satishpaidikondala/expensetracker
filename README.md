@@ -1,30 +1,49 @@
-# Expense Tracker API
+# Expense Tracker
 
-A robust RESTful API built with Java Spring Boot to manage personal expenses. It supports advanced filtering, sorting, and data aggregation (summaries by category and month).
+A full-stack expense tracking application with a Spring Boot backend and React frontend, containerized with Docker.
 
 ## Features
-- **CRUD Operations**: Create, Read, Update, Delete expenses.
-- **Dynamic Filtering**: Filter by date range, category, and amount range.
-- **Sorting**: Sort by date or amount (ascending/descending).
-- **Aggregations**: Get insights like "Total spent on Food" or "Monthly spending breakdown".
-- **Validation**: Ensures data integrity (no negative amounts, valid dates).
+- **Dashboard Overview** – summary cards (total spent, max expense, most expensive area), monthly bar chart, category pie chart
+- **Month Filter** – filter dashboard data to a specific month
+- **Expense Management** – add, view, sort, search, paginate, and delete expenses
+- **CSV Export** – download expenses data as a CSV file
+- **Seed Data** – auto-seeds 39 sample expenses across 2025 and the current year on first run
 
 ## Tech Stack
-- **Language**: Java 21
-- **Framework**: Spring Boot 3
-- **Database**: H2 (In-Memory) / Compatible with MySQL/PostgreSQL
-- **Build Tool**: Maven
+- **Backend**: Java 21, Spring Boot 3, H2 Database, Maven
+- **Frontend**: React, Vite, Recharts
+- **Infrastructure**: Docker, Docker Compose, nginx
 
 ---
 
-## Setup & Running Locally
+## Setup & Running
 
 ### Prerequisites
-- Java JDK 21+ installed.
-- Maven installed (or use the `mvnw` wrapper).
+- Docker & Docker Compose installed (or Java 21 + Node 22 for local dev)
 
-### Steps
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/satishpaidikondala/expensetracker.git]
-   cd expensetracker
+### Docker (recommended)
+```bash
+docker compose up --build
+```
+App runs at `http://localhost:80`.
+
+### Local development
+**Terminal 1 (backend):**
+```bash
+cd backend
+./mvnw spring-boot:run
+```
+
+**Terminal 2 (frontend):**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Frontend at `http://localhost:5173`, backend at `http://localhost:8080`.
+
+### Or run both at once from root:
+```bash
+npm install
+npm run dev
+```
