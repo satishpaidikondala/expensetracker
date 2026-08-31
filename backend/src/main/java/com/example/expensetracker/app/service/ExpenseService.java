@@ -22,6 +22,7 @@ public class ExpenseService {
     }
 
     public Expense createExpense(Expense expense) {
+        if (expense.getUserId() == null || expense.getUserId().isBlank()) expense.setUserId("default");
         return repository.save(expense);
     }
 

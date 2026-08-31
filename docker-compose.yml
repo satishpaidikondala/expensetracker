@@ -1,16 +1,79 @@
 services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: expensedb
+      POSTGRES_USER: expensetracker
+      POSTGRES_PASSWORD: expensetracker
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U expensetracker -d expensedb"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: expensetracker
+      RABBITMQ_DEFAULT_PASS: expensetracker
+    volumes:
+      - rabbit-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      retries: 10
+    restart: unless-stopped
+
+  ai-parser:
+    build: ./ai-parser
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 10s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped
+
   backend:
     build: ./backend
     ports:
-      - "8080:8080"
+      - "18080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:h2:file:/data/expensedb
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
-      - SPRING_DATASOURCE_USERNAME=sa
-      - SPRING_DATASOURCE_PASSWORD=
-      - SPRING_H2_CONSOLE_ENABLED=true
-    volumes:
-      - h2-data:/data
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/expensedb
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - SPRING_DATASOURCE_USERNAME=expensetracker
+      - SPRING_DATASOURCE_PASSWORD=expensetracker
+      - SPRING_H2_CONSOLE_ENABLED=false
+      - SPRING_REDIS_HOST=redis
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_USERNAME=expensetracker
+      - SPRING_RABBITMQ_PASSWORD=expensetracker
+      - AI_PARSER_URL=http://ai-parser:8000
+      - AI_PARSER_ENABLED=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      ai-parser:
+        condition: service_healthy
     restart: unless-stopped
 
   frontend:
@@ -22,4 +85,6 @@ services:
     restart: unless-stopped
 
 volumes:
-  h2-data:
+  pg-data:
+  redis-data:
+  rabbit-data:

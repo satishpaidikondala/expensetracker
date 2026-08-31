@@ -9,13 +9,17 @@ import java.time.LocalDate;
 
 @Table(name = "expenses", indexes = {
     @Index(name = "idx_category", columnList = "category"),
-    @Index(name = "idx_date", columnList = "date")
+    @Index(name = "idx_date", columnList = "date"),
+    @Index(name = "idx_user_id", columnList = "user_id")
 })
 public class Expense {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "user_id", nullable = false)
+    private String userId = "default";
 
     @NotNull(message = "Amount is required")
     @Positive(message = "Amount must be positive")
@@ -44,7 +48,11 @@ public class Expense {
 		this.category = category;
 		this.description = description;
 		this.date = date;
+		this.userId = "default";
 	}
+
+	public String getUserId() { return userId; }
+	public void setUserId(String userId) { this.userId = userId; }
 
 
 	public Long getId() {

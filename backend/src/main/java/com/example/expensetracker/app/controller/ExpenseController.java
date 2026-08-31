@@ -17,14 +17,36 @@ import java.util.Map;
 public class ExpenseController {
 
     private final ExpenseService service;
+    private final com.example.expensetracker.app.service.AiParserClient aiParser;
+    private final com.example.expensetracker.app.service.SyncPublisher syncPublisher;
 
-    public ExpenseController(ExpenseService service) {
+    public ExpenseController(ExpenseService service, com.example.expensetracker.app.service.AiParserClient aiParser, com.example.expensetracker.app.service.SyncPublisher syncPublisher) {
         this.service = service;
+        this.aiParser = aiParser;
+        this.syncPublisher = syncPublisher;
     }
 
     @PostMapping
-    public ResponseEntity<Expense> createExpense(@Valid @RequestBody Expense expense) {
-        return new ResponseEntity<>(service.createExpense(expense), HttpStatus.CREATED);
+    public ResponseEntity<Expense> createExpense(@Valid @RequestBody Expense expense, @RequestAttribute(value="currentUserId", required=false) String userId) {
+        if (userId != null) expense.setUserId(userId);
+        Expense created = service.createExpense(expense);
+        syncPublisher.publish(created);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/parse")
+    public ResponseEntity<Expense> parseAndCreate(@RequestBody Map<String,String> body, @RequestAttribute(value="currentUserId", required=false) String userId) {
+        String text = body.getOrDefault("text", "");
+        Map<String,Object> parsed = aiParser.parse(text);
+        Expense e = new Expense();
+        e.setAmount(new BigDecimal(parsed.get("amount").toString()));
+        e.setCategory((String) parsed.get("category"));
+        e.setDescription((String) parsed.getOrDefault("description", text));
+        e.setDate(LocalDate.parse((String) parsed.get("date")));
+        if (userId != null) e.setUserId(userId);
+        Expense created = service.createExpense(e);
+        syncPublisher.publish(created);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
